@@ -1,8 +1,8 @@
-# Project #: Project Name
+# Project 1: Deterministic Finite Automata
 
-* Author: Your Name
-* Class: CS61 Section #
-* Semester:
+* Author: Randy Bauer, Oliver Hill
+* Class: CS361 Section 001
+* Semester: Spring 2026
 
 ## Overview
 
@@ -41,15 +41,3 @@ considered plagiarism and be dealt with accordingly. So be safe CITE!
 Finally, remove these instructions from your README.md after you are finished!
 
 ----------
-
-## Notes
-
-* This README.md template is using Markdown. Here is some help on using Markdown:
-  [markdown cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
-
-
-* Markdown can be edited and viewed natively in most IDEs such as Eclipse and VS Code. Just toggle
-  between the Markdown source and preview tabs.
-
-* To preview your README.md output online, you can copy your file contents to a Markdown editor/previewer
-  such as [https://stackedit.io/editor](https://stackedit.io/editor).
