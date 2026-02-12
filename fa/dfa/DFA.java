@@ -1,33 +1,76 @@
 package fa.dfa;
 
 import java.util.Set;
+import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 
 import fa.State;
 
+/**
+ * JavaDoc Description TODO
+ * @author Randy Bauer
+ * @author Oliver Hill
+ */
 public class DFA implements DFAInterface {
 
+    private LinkedHashSet<DFAState> states;
+    private LinkedHashSet<Character> sigma;
+    private DFAState startState;
+    private LinkedHashSet<DFAState> finalStates;
+    private LinkedHashMap<DFAState, LinkedHashMap<Character, DFAState>> transitions;
+    
+    /**
+     * Default constructor...
+     */
+    public DFA() {
+        states = new LinkedHashSet<>();
+        sigma = new LinkedHashSet<>();
+        startState = null;
+        finalStates = new LinkedHashSet<>();
+        transitions = new LinkedHashMap<>();
+        // Potentially add a HashMap to store states by name for O(1) access where applicable
+    }
+    
     @Override
     public boolean addState(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addState'");
+        for (DFAState s : states) {
+            if (s.getName().equals(name)) {
+                return false;
+            }
+        }
+            
+        DFAState newState = new DFAState(name);
+        states.add(newState);
+        return true;
     }
 
     @Override
     public boolean setFinal(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setFinal'");
+        for (DFAState s : states) {
+            if (s.getName().equals(name)) {
+                finalStates.add(s);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean setStart(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setStart'");
+        for (DFAState s : states) {
+            if (s.getName().equals(name)) {
+                startState = s;
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public void addSigma(char symbol) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addSigma'");
+        if (!sigma.contains(symbol)) {
+            sigma.add(symbol);
+        }
     }
 
     @Override
@@ -38,26 +81,35 @@ public class DFA implements DFAInterface {
 
     @Override
     public Set<Character> getSigma() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSigma'");
+        return new LinkedHashSet<>(sigma);
     }
 
     @Override
     public State getState(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getState'");
+        for (DFAState s : states) {
+            if (s.getName().equals(name)) {
+                return s;
+            }
+        }
+        return null;
     }
 
     @Override
     public boolean isFinal(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isFinal'");
+        for (DFAState s : finalStates) {
+            if (s.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public boolean isStart(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isStart'");
+        if (startState.getName().equals(name)) {
+            return true;
+        }
+        return false;
     }
 
     @Override
