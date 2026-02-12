@@ -1,17 +1,13 @@
 package test.dfa;
 
-//testing git file access, having a weird error
-
-import static org.junit.Assert.*;
+import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Set;
-
-import org.junit.Test;
-
 import fa.dfa.DFA;
 
-public class DFATest {
 
+public class DFATest {
 
 	//------------------- dfa1 tests ----------------------//
 	private DFA dfa1() {
