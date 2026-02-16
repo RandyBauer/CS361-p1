@@ -14,14 +14,14 @@ import fa.State;
  */
 public class DFA implements DFAInterface {
 
-    private LinkedHashSet<DFAState> states;
-    private LinkedHashSet<Character> sigma;
-    private DFAState startState;
-    private LinkedHashSet<DFAState> finalStates;
-    private LinkedHashMap<DFAState, LinkedHashMap<Character, DFAState>> transitions;
+    private LinkedHashSet<DFAState> states;         // Q: the set of states
+    private LinkedHashSet<Character> sigma;         // Sigma: the alphabet
+    private DFAState startState;                    // q0: the start state
+    private LinkedHashSet<DFAState> finalStates;    // F: the set of final states
+    private LinkedHashMap<DFAState, LinkedHashMap<Character, DFAState>> transitions;    // delta: the transition table
 
     /**
-     * Default constructor...
+     * Default constructor. Initializes empty DFA 5-tuple: Q, Sigma, delta, q0, F
      */
     public DFA() {
         states = new LinkedHashSet<>();
@@ -32,6 +32,9 @@ public class DFA implements DFAInterface {
         // Potentially add a HashMap to store states by name for O(1) access where applicable
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean addState(String name) {
         for (DFAState s : states) {
@@ -45,6 +48,9 @@ public class DFA implements DFAInterface {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean setFinal(String name) {
         for (DFAState s : states) {
@@ -56,6 +62,9 @@ public class DFA implements DFAInterface {
         return false;
     }
 
+/**
+     * {@inheritDoc}
+     */
     @Override
     public boolean setStart(String name) {
         for (DFAState s : states) {
@@ -67,6 +76,9 @@ public class DFA implements DFAInterface {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addSigma(char symbol) {
         if (!sigma.contains(symbol)) {
@@ -74,17 +86,51 @@ public class DFA implements DFAInterface {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean accepts(String s) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'accepts'");
+        // Check that start state is not null
+        if (startState == null) {
+            return false;
+        }
+        // Check if s is an empty string
+        if  (s.equals("e")) {
+            return finalStates.contains(startState);
+        }
+        
+        // Simulate the DFA on input s
+        DFAState currState = startState;
+        for (char c : s.toCharArray()) {
+            
+            if (!sigma.contains(c)) {
+                return false;
+            }
+            if (!transitions.containsKey(currState)) {
+                return false;
+            }
+            Map<Character, DFAState> row = transitions.get(currState);
+            if (!row.containsKey(c)) {
+                return false;
+            }
+            currState = row.get(c);
+        }
+        return finalStates.contains(currState);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<Character> getSigma() {
         return new LinkedHashSet<>(sigma);
     }
 
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public State getState(String name) {
         for (DFAState s : states) {
@@ -95,6 +141,9 @@ public class DFA implements DFAInterface {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isFinal(String name) {
         for (DFAState s : finalStates) {
@@ -105,6 +154,9 @@ public class DFA implements DFAInterface {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isStart(String name) {
        if (startState == null) {
@@ -113,6 +165,9 @@ public class DFA implements DFAInterface {
        return startState.getName().equals(name);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean addTransition(String fromState, String toState, char onSymb) {
         if (!sigma.contains(onSymb)) {
@@ -138,11 +193,13 @@ public class DFA implements DFAInterface {
             transitions.put(from, new LinkedHashMap<>());
         }
 
-        //gets the mapped row (might have to check this later on, not entirely sure Map <Character, DFAState> is doing
+        //gets the mapped row
         Map<Character, DFAState> row = transitions.get(from);
 
-        if (row.containsKey(onSymb)) { //checks to make sure only one transition on symbol
-            return false;
+        // check and allowing repeated transitions with the same symbol and to state
+        if (row.containsKey(onSymb)) {
+            DFAState existingState = row.get(onSymb);
+            return existingState == to;
         }
 
         //adds transition (to)
@@ -152,12 +209,15 @@ public class DFA implements DFAInterface {
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DFA swap(char symb1, char symb2) {
         DFA newDFA = new DFA();
 
-        for (Character x : sigma) {
-            newDFA.addSigma(x);
+        for (Character c : sigma) {
+            newDFA.addSigma(c);
         }
 
         for (DFAState s : states) {
@@ -172,11 +232,81 @@ public class DFA implements DFAInterface {
             newDFA.setFinal(fs.getName());
         }
 
-
-        //this needs to be finished
-        //
-         //
-         //
+        for (DFAState from : transitions.keySet()) {
+            Map<Character, DFAState> row = transitions.get(from);
+            for (Character c : row.keySet()) {
+                DFAState to = row.get(c);
+                char newSymb = c;
+                if (c == symb1) {
+                    newSymb = symb2;
+                } else if (c == symb2) {
+                    newSymb = symb1;
+                }
+                newDFA.addTransition(from.getName(), to.getName(), newSymb);
+            }
+        }
         return newDFA;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        
+        // Print Q
+        sb.append("Q = { ");
+        for (DFAState s : states) {
+            sb.append(s.getName()).append(" ");
+        }
+        sb.append("}\n");
+
+        // Print Sigma
+        sb.append("Sigma = { ");
+        for (Character c : sigma) {
+            sb.append(c).append(" ");
+        }
+        sb.append("}\n");
+
+        // Print delta
+        sb.append("delta =\n\t");
+        for (Character c : sigma) {
+            sb.append(c).append("\t");
+        }
+        sb.append("\n");
+
+        for (DFAState s : states) {
+            sb.append(s.getName()).append("\t");
+            
+            Map<Character, DFAState> row = transitions.get(s);
+            
+            for (Character c : sigma) {
+                if (row != null && row.containsKey(c)) {
+                    sb.append(row.get(c).getName()).append("\t");
+                } else {
+                    sb.append("--\t");
+                }
+            }
+            sb.append("\n");
+        }
+
+        // Print start state
+        sb.append("q0 = ");
+        if (startState != null) {
+            sb.append(startState.getName());
+        } else {
+            sb.append("null");
+        }
+        sb.append("\n");
+
+        // Print final states
+        sb.append("F = { ");
+        for (DFAState fs : finalStates) {
+            sb.append(fs.getName()).append(" ");
+        }
+        sb.append("}");
+
+        return sb.toString();
     }
 }
