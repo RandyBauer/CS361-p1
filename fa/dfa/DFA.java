@@ -8,7 +8,8 @@ import java.util.LinkedHashMap;
 import fa.State;
 
 /**
- * JavaDoc Description TODO
+ * Models a deterministic finite autonoma (DFA) and supports it's construction, simulation, symbol swapping
+ * for transitions, and printing
  * @author Randy Bauer
  * @author Oliver Hill
  */
@@ -37,14 +38,14 @@ public class DFA implements DFAInterface {
      */
     @Override
     public boolean addState(String name) {
-        for (DFAState s : states) {
+        for (DFAState s : states) { //for each element of type DFAState in the collection states, assign to s and execute loop body
             if (s.getName().equals(name)) {
                 return false;
             }
         }
 
-        DFAState newState = new DFAState(name);
-        states.add(newState);
+        DFAState newState = new DFAState(name); //create new DFAState object using name param input
+        states.add(newState); //add new DFAState object to states LinkedHashSet
         return true;
     }
 
@@ -53,9 +54,9 @@ public class DFA implements DFAInterface {
      */
     @Override
     public boolean setFinal(String name) {
-        for (DFAState s : states) {
+        for (DFAState s : states) { //for each element of type DFAState in the collection states, assign to s and execute loop body
             if (s.getName().equals(name)) {
-                finalStates.add(s);
+                finalStates.add(s); //add s to the finalStates LinkedHashSet
                 return true;
             }
         }
@@ -67,9 +68,9 @@ public class DFA implements DFAInterface {
      */
     @Override
     public boolean setStart(String name) {
-        for (DFAState s : states) {
-            if (s.getName().equals(name)) {
-                startState = s;
+        for (DFAState s : states) { //for each element of type DFAState in the collection states, assign to s and execute loop body
+            if (s.getName().equals(name)) { //finds a state whose name matches the param input of name
+                startState = s; //if found, sets the state as startState, and returns true
                 return true;
             }
         }
@@ -81,8 +82,8 @@ public class DFA implements DFAInterface {
      */
     @Override
     public void addSigma(char symbol) {
-        if (!sigma.contains(symbol)) {
-            sigma.add(symbol);
+        if (!sigma.contains(symbol)) { //checks to see if sigma does not contain the symbol
+            sigma.add(symbol); //if does not contain, add symbol to sigma (alphabet)
         }
     }
 
@@ -99,11 +100,11 @@ public class DFA implements DFAInterface {
         if  (s.equals("e")) {
             return finalStates.contains(startState);
         }
-        
+
         // Simulate the DFA on input s
         DFAState currState = startState;
         for (char c : s.toCharArray()) {
-            
+
             if (!sigma.contains(c)) {
                 return false;
             }
@@ -124,16 +125,16 @@ public class DFA implements DFAInterface {
      */
     @Override
     public Set<Character> getSigma() {
-        return new LinkedHashSet<>(sigma);
+        return new LinkedHashSet<>(sigma); //returns the sigma (alphabet) as a new LinkedHashSet
     }
 
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
     public State getState(String name) {
-        for (DFAState s : states) {
+        for (DFAState s : states) { //for each element of type DFAState in the collection states, assign to s and execute loop body
             if (s.getName().equals(name)) {
                 return s;
             }
@@ -146,7 +147,7 @@ public class DFA implements DFAInterface {
      */
     @Override
     public boolean isFinal(String name) {
-        for (DFAState s : finalStates) {
+        for (DFAState s : finalStates) { //for each element of type DFAState in the collection states, assign to s and execute loop body
             if (s.getName().equals(name)) {
                 return true;
             }
@@ -176,7 +177,7 @@ public class DFA implements DFAInterface {
         DFAState from = null; //locate existing DFAState objects
         DFAState to = null;
 
-        for (DFAState s : states) {
+        for (DFAState s : states) { //for each element of type DFAState in the collection states, assign to s and execute loop body
             if (s.getName().equals(fromState)) {
                 from = s;
             }
@@ -214,14 +215,14 @@ public class DFA implements DFAInterface {
      */
     @Override
     public DFA swap(char symb1, char symb2) {
-        DFA newDFA = new DFA();
+        DFA newDFA = new DFA(); //sets newDFA as a new DFA object
 
-        for (Character c : sigma) {
-            newDFA.addSigma(c);
+        for (Character c : sigma) { //for each element of type Character in the collection sigma, assign to c and execute loop body
+            newDFA.addSigma(c); //add c to sigma collection using addSigma function
         }
 
-        for (DFAState s : states) {
-            newDFA.addState(s.getName());
+        for (DFAState s : states) { //for each element of type DFAState in the collection states, assign to s and execute loop body
+            newDFA.addState(s.getName()); //add states' name to newDFA created object
         }
 
         if (startState != null) {
@@ -234,18 +235,20 @@ public class DFA implements DFAInterface {
 
         for (DFAState from : transitions.keySet()) {
             Map<Character, DFAState> row = transitions.get(from);
-            for (Character c : row.keySet()) {
-                DFAState to = row.get(c);
+            for (Character c : row.keySet()) { //For each symbol in the alphabet that has a transition from this state…
+                DFAState to = row.get(c); //retrieve destination state
                 char newSymb = c;
+
+                //swap section, decide if the symbols need to be swapped
                 if (c == symb1) {
                     newSymb = symb2;
                 } else if (c == symb2) {
                     newSymb = symb1;
                 }
-                newDFA.addTransition(from.getName(), to.getName(), newSymb);
+                newDFA.addTransition(from.getName(), to.getName(), newSymb); //add transition to newDFA
             }
         }
-        return newDFA;
+        return newDFA; //return newDFA object either swapped or kept the same
     }
 
     /**
@@ -254,7 +257,7 @@ public class DFA implements DFAInterface {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        
+
         // Print Q
         sb.append("Q = { ");
         for (DFAState s : states) {
@@ -278,9 +281,9 @@ public class DFA implements DFAInterface {
 
         for (DFAState s : states) {
             sb.append(s.getName()).append("\t");
-            
+
             Map<Character, DFAState> row = transitions.get(s);
-            
+
             for (Character c : sigma) {
                 if (row != null && row.containsKey(c)) {
                     sb.append(row.get(c).getName()).append("\t");
