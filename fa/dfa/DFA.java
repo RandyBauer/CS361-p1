@@ -103,21 +103,21 @@ public class DFA implements DFAInterface {
 
         // Simulate the DFA on input s
         DFAState currState = startState;
-        for (char c : s.toCharArray()) {
+        for (char c : s.toCharArray()) { // Process each character of the input string sequentially
 
-            if (!sigma.contains(c)) {
+            if (!sigma.contains(c)) {  // If the character is not in the DFA's alphabet, reject immediately
                 return false;
             }
-            if (!transitions.containsKey(currState)) {
+            if (!transitions.containsKey(currState)) { // If the current state has no outgoing transitions defined, reject
                 return false;
             }
-            Map<Character, DFAState> row = transitions.get(currState);
-            if (!row.containsKey(c)) {
+            Map<Character, DFAState> row = transitions.get(currState); // Retrieve the transition map (row) for the current state
+            if (!row.containsKey(c)) {  // If there is no transition defined for this character from the current state, reject
                 return false;
             }
-            currState = row.get(c);
+            currState = row.get(c); // Move to the next state based on the transition for character c
         }
-        return finalStates.contains(currState);
+        return finalStates.contains(currState); //accept if the current state is a final (accepting) state
     }
 
     /**
